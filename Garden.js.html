@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Garden.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Condition.html">Condition</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Condition.html#.createCondition">createCondition</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Condition.html#.createInterval">createInterval</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Device.html">Device</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#disable">disable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#enable">enable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#getStatus">getStatus</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#log">log</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Garden.html">Garden</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#disable">disable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#enable">enable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#getDevice">getDevice</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#getGardenStatus">getGardenStatus</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#getStatus">getStatus</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#log">log</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Logger.html">Logger</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Trigger.html">Trigger</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TriggerManager.html">TriggerManager</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="View.html">View</a></span></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#-LoadsandInitializesAcontrollerDevice">- Loads and Initializes A controller Device</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#-LoadsandInitializesaSensorDevice">- Loads and Initializes a Sensor Device</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Garden.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Provides Garden Object
+ */
+const Sensor = require('./Device/Sensor');
+const Controller = require('./Device/Controller');
+const { Readable } = require('stream');
+const utils = require('./utils');
+const path = require('path');
+//const EventEmitter = require('events');
+/**
+ * Garden Object Manages Devices.
+ * @namespace Garden
+ * @class Garden
+ * @constructor
+ * @param {string} name - The Name of the Garden
+ * @param {string} desc - (Optional) A Description for the Garden
+ * @param {GardenEvent} emitter - Event Emitter
+ */
+class Garden {
+    constructor(name, desc, emitter) {
+        this.name = name;
+        this.desc = desc;
+        /**
+         * @name Garden#sensors
+         * @type {Sensor[]}
+         */
+        this.sensors = [];
+        /**
+         * @name Garden#controllers
+         * @type {Controller[]}
+         */
+        this.controllers = [];
+        
+        this.devicesFileList = [];
+        /**
+         * @name Garden#emitter
+         * @typedef {GardenEvent}
+         */
+        this.emitter = emitter;
+        /**
+         * @name Garden#enabled
+         * @type {Boolean}
+         * @default false
+         */
+        this.enabled = false;
+        this.logOut = new Readable({
+            objectMode: false,
+            read() {}
+        });
+    }
+
+    /** Gets the Garden Status of all loaded Devices
+     * @method
+     * @return {GardenStatus} A Garden Status Object
+     */
+    getGardenStatus(){
+        let gardenStatus = {garden: this.name};
+        gardenStatus.sensors = [];
+        this.sensors.forEach(sensor => {
+            //console.log(sensor.getStatus());
+            let sensorStatus = sensor.getStatus();
+            gardenStatus.sensors.push(sensorStatus);
+        });
+        this.controllers.forEach(controller => {
+            console.log(controller.getStatus());
+            let controllerStatus = controller.getStatus();
+            gardenStatus.controllers = [];
+            gardenStatus.controllers.push(controllerStatus);
+        });
+
+        console.log("gardenStatus", gardenStatus);
+
+        return gardenStatus;
+    }
+    /**
+     * @method - Loads and Initializes a Sensor Device
+     * @param {string} filePath
+     * @returns {Sensor} - the Loaded Sensor Object
+     */
+    loadSensor(fileName){
+        //This is set in the Garden Class
+        let gardenRootPath = process.env.GARDEN_ROOT_DIR;
+        try {
+        var filePath = path.join(gardenRootPath, 'Sensors', fileName);
+        console.log('Attempting Load Sensor At: ', filePath);
+        var sensor = require(filePath);
+        //let deviceName = sensor.name;
+        this.devicesFileList.push({fileName: filePath, sensorName: sensor.name});
+        sensor.emitter = this.emitter;
+        //This works but Im not sure what how I will want to call this so im leaving both for now (defining sensor as propety and sensor list).
+        Object.defineProperty(this, sensor.name, {value: sensor});
+        sensor.enable();
+        this.sensors.push(sensor);
+        } catch (err){
+            throw new Error(err);
+        }
+        return sensor;
+    }
+     /**
+     * @method - Loads and Initializes A controller Device
+     * @param {string} filePath
+     * @returns {Sensor} - the Loaded Sensor Object
+     */
+    loadController(fileName){
+        let gardenRootPath = process.env.GARDEN_ROOT_DIR;
+        try {
+        var filePath = path.join(gardenRootPath, 'Controllers', fileName);
+        console.log('Attempting Load Controller At: ', filePath)
+        var controller = require(filePath);
+        this.devicesFileList.push({fileName: filePath, sensorName: controller.name});
+        controller.fileName = filePath;
+        controller.emitter = this.emitter;
+        Object.defineProperty(this, controller.name, {value: controller});
+        this.controllers.push(controller);
+        controller.enable();
+        } catch (err){
+            throw new Error(err);
+        }
+        return controller;
+    }
+    /** Get Loaded Device from Device name or File Name
+     * @method
+     * @param {string} deviceName - The Device FileName of Device Name 
+     * @returns {Device} - Device of Type Either Sensor or Controller 
+     */
+    getDevice(deviceName){
+        //TODO Check For Device Type
+        let device = Object.getOwnPropertyDescriptor(this, deviceName);
+        return device.value;
+    }
+    /** Enables all loaded Sensors and Controller
+     * @method
+     */
+    enable(){
+        if(!this.enabled){
+            let sensors = this.sensors;
+            let controllers = this.controllers;
+            if(typeof sensors !== 'undefined'){
+                sensors.forEach(sensor => {
+                     sensor.enable();
+                }); 
+        } else {
+            
+        }
+            if(typeof controllers !== 'undefined'){
+                controllers.forEach(controller => {
+                    controller.enable();
+            });
+            }
+        this.enabled = true;
+        } else {
+
+        }
+    }
+    /** Disables all Loaded Controllers and Sensors
+     * @method
+     */
+    disable(){
+        if(this.enabled){
+            let sensors = this.sensors;
+            let controllers = this.controllers;
+            if(typeof sensors !== 'undefined'){
+                sensors.forEach(sensor => {
+                     sensor.disable();
+                }); 
+        } else {
+            
+        }
+            if(typeof controllers !== 'undefined'){
+                controllers.forEach(controller => {
+                    controller.disable();
+            });
+            }
+        this.enabled = false;
+        } else {
+
+        }
+    }
+    /** Another Shitty Logging Function DONT USE (9/10)
+     * @deprecated
+     * @param {*} msg 
+     * @param {*} object 
+     */
+    log(msg, object){
+        if(typeof object !== 'undefined' &amp;&amp; typeof object === 'object'){
+            
+            var cache = [];
+            var stringObj = JSON.stringify(object, function(key, value) {
+                if (typeof value === 'object' &amp;&amp; value !== null) {
+                    if (cache.indexOf(value) !== -1) {
+                        // Duplicate reference found, discard key
+                        return;
+                    }
+                    // Store value in our collection
+                    cache.push(value);
+                }
+                return value;
+            });
+            cache = null; // Enable garbage collection
+            this.logOut.push(msg + '' + stringObj);
+        } else {
+            this.logOut.push(msg);
+        }   
+    }
+}
+
+module.exports = Garden ;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Thu Oct 31 2019 18:58:59 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

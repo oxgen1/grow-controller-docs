@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Device/Sensor.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Condition.html">Condition</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Condition.html#.createCondition">createCondition</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Condition.html#.createInterval">createInterval</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Device.html">Device</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#disable">disable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#enable">enable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#getStatus">getStatus</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Device.html#log">log</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Garden.html">Garden</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#disable">disable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#enable">enable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#getDevice">getDevice</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#getGardenStatus">getGardenStatus</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#getStatus">getStatus</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Garden.html#log">log</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Logger.html">Logger</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Trigger.html">Trigger</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TriggerManager.html">TriggerManager</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="View.html">View</a></span></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#-LoadsandInitializesAcontrollerDevice">- Loads and Initializes A controller Device</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#-LoadsandInitializesaSensorDevice">- Loads and Initializes a Sensor Device</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Device/Sensor.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file - Provides the Sensor Object
+ */
+const Device = require("./Device");
+const { Sequelize, sql } = require("../database/DatabaseManager");
+const { Readable } = require('stream');
+
+
+/**
+ * @namespace Garden
+ * @class Sensor
+ * @extends Device
+ * @constructor
+ * @param {sensorData} sensorData - An Settings for the Sensor Object
+ * @param {Object} sensorData.dataFields - This Uses Sequlize Data Types to Build the Table so this must be accurate, @example {FieldName1: {type: Sequelize.FLOAT}, FieldName2: {type: Sequelize.FLOAT}}
+ * @param {int} sensorData.sampleRate - Sample Rate in ms
+ * @example 
+ * var test = new Sensor({
+    id: 1,
+    name: 'test',
+    dataFields: {Temperature: {type: Sequelize.FLOAT}, Humidity: {type: Sequelize.FLOAT}},
+    sampleRate: 2000,
+    verbose: true
+ * });
+ * 
+ */
+class Sensor extends Device {
+    constructor(sensorData) {
+        super(sensorData);
+        this.dataFields = sensorData.dataFields;
+        this.dataFields.Time = {type: Sequelize.INTEGER, allowNull: false};
+        /**
+         * @name Sensor#model
+         * @type {int}
+         */
+        this.sampleRate = sensorData.sampleRate;
+
+        //this.emitter = emitter;
+        /**Defines a Sequlize Database Model
+         * @name Sensor#model 
+         * @type {SequlizeModel}
+        */
+        this.model = sql.define(this.name +"-" +this.id, this.dataFields);
+        //Define a Readable Stream for Data
+        this.dataStream = new Readable({
+            objectMode: true,
+            read() {}
+        });
+    }
+
+    /**
+     * Reads Sensor Data
+     *
+     * @returns {Object}
+     * @memberof Sensor
+     */
+    read(){
+        if(!this.enabled){
+            return false;
+        }
+        return this.dataStream.read();
+    }
+    /** Gets the Status of this Sensor.
+     * @method
+     * @returns {SensorStatus} 
+     */
+    getStatus(){
+        return {
+            name: this.name,
+            enabled: this.enabled,
+            type: this.constructor.name
+        };
+    }
+
+    /**
+     * @method
+     */
+    enable(){
+        if(!this.enabled){
+            try {
+                this._init();
+                this.gardenEmitter.emit('sensorEnabled', (this));
+            } catch (err){
+                throw new Error(err)
+            } finally{
+                this.enabled = true;
+            }
+        } else {
+            return this;
+        }
+    }
+    /**
+     * @method
+     */
+    disable(){
+        if(this.enabled){
+            try {
+                clearInterval(this.intervalTimer);
+                this.gardenEmitter.emit('sensorDisabled', (this));
+                this.log(`Sensor Disabled`);
+            } catch (err){
+
+            } finally {
+                this.enabled = false;
+            }
+        }
+    }
+    /**
+     * Gets the Most Recent Number of Fields from the database
+     * @method
+     * @param {int} numOfPoints 
+     * 
+     * @returns {Array} LatestData
+     */
+    getLatestData(numOfPoints){
+        this.model.findAll({limit: numOfPoints, order: ['Time', 'DESC']}).then((result) => {
+            if (this.verbose) this.log("getLatestData Called: ", result);
+        });
+    }
+    /**
+     * Gets Sensor Data inbetween 2 time periods, with an optional sorting parameter.  
+     * 
+     * @param {*} startTime 
+     * @param {*} endTime 
+     * @param {*} sorting 
+     */
+    getData(startTime, endTime, sorting='DESC'){
+
+    }
+
+    /**
+     *
+     * @abstract
+     * @memberof Sensor
+     */
+    async sample() {
+
+    }
+    /**
+     * @private 
+     * @method
+     */
+    async _logData(){
+        try {
+            let data = await this.sample();
+            
+            if (this.verbose) this.log("Sensor Data: ", data);
+
+            //Are all the Field names and datatypes okay?
+            if (!this._validateData(data)) {
+                console.error('Invalid Data/DataFields');
+            }
+
+            this.dataStream.push(data);
+
+            //Here we Create the Database Entry
+            this.model.create(data).then((model) => {
+                //if (this.verbose) this.log('Sample Logged: ', model);
+            }).catch(err => {
+                throw new Error(err.message);
+            });
+        } catch (err) { 
+            throw new Error(err.message);
+        }
+    }
+    /**
+     * Initialize Interval Timer, Should not be called outside of this class.
+     * @private 
+     * @function
+     * @returns void.
+     */
+    _init() {
+        this.model.sync();
+        
+        var _this = this;
+        this.intervalTimer = setInterval(function () {
+            _this._logData();
+        }, this.sampleRate);
+    }
+
+    _validateData(dataObject){
+        let tableNames = Object.keys(this.dataFields);
+
+        let dataNames = Object.keys(dataObject);
+        //Preform a check in ensure that the data fields the sensor is returning and return the values it is expecting.
+        var diff = dataNames.filter(function(i) {
+                return tableNames.indexOf(i) &lt; 0;
+        });
+        //If we find any Throw an Error, for now we will not handle this but in the future we might not to cause a crash just because one sensor is out of alightment.
+        if(diff.length > 0){
+           throw new Error('You are returning an incorrect Data Field the expected Field Name should be: ' + diff);
+        }
+        return true;
+    }
+    /**
+     * @private 
+     * @function
+     * @returns {Object} - Database Status Object
+     */
+    _getDatabaseStatus(){
+
+    }
+}
+
+/*class SensorEvent extends EventEmitter {
+    constructor(){
+        super();
+    }
+} */
+
+module.exports = Sensor;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Thu Oct 31 2019 18:58:59 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
