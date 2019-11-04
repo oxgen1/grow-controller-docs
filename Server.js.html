@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>TriggerManager - Documentation</title>
+    <title>Server.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,191 +29,220 @@
 
 <div id="main">
     
-    <h1 class="page-title">TriggerManager</h1>
+    <h1 class="page-title">Server.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-            <span class="ancestors"><a href="Triggers.html">Triggers</a></span>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* eslint-disable no-extend-native */
+const ipc = require('node-ipc');
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
+process.env.PROJECT_ROOT = path.normalize(path.join(__dirname, '/..'));
+const {
+    Garden, Logger
+} = require('../backend');
+
+let inGarden;
+let garden;
+
+if (process.argv[2] !== undefined) {
+    try { 
+        inGarden = path.isAbsolute(process.argv[2]) ? inGarden: path.resolve(process.cwd(), process.argv[2]);
+        console.log(inGarden);
+        /** @global */
+        global.__gardendir = path.dirname(inGarden);
+        /** @global */       
+        global.__gardenfile = inGarden;
+        garden = require(inGarden);
+    } catch (err) {
+        console.error('Could Not Find Garden at: %s \n %o', inGarden, err);
+    }
+}
+
+
+
+if (garden instanceof Garden) {
+    const log = new Logger();
+    /**@global */
+    global.log = log;
+    /* Initialize Inter Process Communiciation */
+    ipc.config.id = garden.name;
+    ipc.config.retry = 1500;
+
+    ipc.serve(() => {
+        console.log('Server Started');
+    });
+
+    /* IPC Event Listeners Defined Here */
+
+    //Start Command Listener
+    ipc.server.on('app.start', (data, socket) => {
+        //TODO Confirm These Things.
+        garden.enable();
+        ipc.server.emit(socket, 'done', 0);
+        ipc.log('Garden Started: ', data);
+    });
+
+    //Stop Command Listener
+    ipc.server.on('app.stop', (data, socket) => {
+        garden.disable();
+        //ipc.log('Socket: ', socket);
         
-        TriggerManager
-        </h2>
+        ipc.server.emit(socket, 'done', 0);
         
-            <div class="class-description">The Trigger Manager Class</div>
-        
-    
-</header>
+        ipc.log('Garden Stopped: ', data);
+    });
 
-<article>
-    <div class="container-overview">
-    
-        
-<div class="section-method">
+    ipc.server.on('app.read', (data, socket) => {
+        let sensor = garden.getDevice(data)
+        //ipc.log(garden.getDevice(data));
+        ipc.log(sensor.read());
 
-    
-    <h2>Constructor</h2>
-    
+    });
 
-    <h4 class="name" id="TriggerManager"><span class="type-signature"></span>new TriggerManager<span class="signature">(garden)</span><span class="type-signature"></span></h4>
+    //Status Command Listener
+    ipc.server.on('app.getStatus', (data, socket) => {
+        let statusTemplate = {};
 
-    
+        if (typeof data == 'string') {
+            let sensor = Object.getOwnPropertyDescriptor(garden, data).value;
+            ipc.server.emit(socket, 'render', sensor.getGardenStatus());
+        } else {
+            let gardenStatus = garden.getGardenStatus();
+            /*statusTemplate.title = gardenStatus.garden;
+            statusTemplate.fields = Object.keys(gardenStatus.sensors[0]);
+            statusTemplate.values = [];
+            gardenStatus.sensors.forEach(row => {
+                statusTemplate.values.push(Object.values(row));
+            });
+            statusTemplate.values.push() */
 
-
-
-<div class="description">
-    Creates an instance of TriggerManager.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Trigger_TriggerManager.js.html">Trigger/TriggerManager.js</a>, <a href="Trigger_TriggerManager.js.html#line17">line 17</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
+            let statusOut = formatter(gardenStatus.garden, gardenStatus.sensors, gardenStatus.controllers);
+            ipc.log(statusOut);
             
-                <td class="name"><code>garden</code></td>
-            
+            ipc.server.emit(socket, 'render', statusOut);
+        }
+    });
 
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="Garden.html">Garden</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <a href="Garden.html">Garden</a>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
+    ipc.server.start();
+} else {
+    console.error("No Garden was Found!");
+    process.exit(10);
+}
 
 
+const formatter = (title, ...objects) => {
+    let formattedOut = {
+        title: title,
+        lists: []
+    };
+    let format = {
+        values: []
+    };
+    let keys = [];
+    let counter = 0;
+    if(objects instanceof Array){
+        format.fields = (Object.keys(objects[0][0]));
+        keys[counter] = Object.keys(objects[0][0]);
+        objects.forEach((object, n) => {
+            if(object instanceof Array){
+                //format.fields = (Object.keys(object[0]));
+                var seenKeys = false;
+                var stickyCounter = undefined;
+                object.forEach((obj, i) => {
+                    if(!format.fields.equals(Object.keys(obj))){
+                         //If we see a difference in the field lists stop this format List.
+                          //might need to swap this to the end of the function Or not
+                         formattedOut.lists[counter] = format;
+                         format = {
+                             values: []
+                         };
+                         format.fields = (Object.keys(obj));
 
+                         let foundKeyPos = format.fields.findInArray(keys);
+                         if(foundKeyPos !== false){
+                            seenKeys = true;
+                            stickyCounter = foundKeyPos;
+                            formattedOut.lists[stickyCounter].values.push(Object.values(obj));
+                             //console.log("Found Key Pos: ", foundKeyPos);
+                         } else {
+                            format.values.push(Object.values(obj));
+                         }
+                         keys[counter + 1] = Object.keys(object[0]);
+                         counter++;
+                    } else {
+                        if(seenKeys){
+                            formattedOut.lists[stickyCounter].values.push(Object.values(obj));
+                        } else {
+                            format.values.push(Object.values(obj));  
+                        }                                          
+                    }
+                });
+                if(!seenKeys) formattedOut.lists[counter] = format;
+            } else {
+                //TODO HANDLE NO ARRAY CASES
+            }
+        });
+    } else {
 
+    }
+    return formattedOut;
+}
 
+//#region 
+// Warn if overriding existing method
+if(Array.prototype.equals)
+    console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
 
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length)
+        return false;
 
+    for (var i = 0, l=this.length; i &lt; l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array &amp;&amp; array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;       
+        }           
+        else if (this[i] != array[i]) { 
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;   
+        }           
+    }       
+    return true;
+}
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+Array.prototype.findInArray = function (arrays){
+    var index, array;
 
+    for(index = 0; index &lt; arrays.length; index++){
+        if(this.equals(arrays[index])){
+            return index;
+        }
+    }
+    return false;
+}
 
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+Object.defineProperty(Array.prototype, "findInArray", {enumerable: false});
+//#endregion
+</code></pre>
+        </article>
+    </section>
 
 
 
