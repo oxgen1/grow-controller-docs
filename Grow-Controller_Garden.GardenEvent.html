@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Device/Controller.js - Documentation</title>
+    <title>GardenEvent - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,138 +29,142 @@
 
 <div id="main">
     
-    <h1 class="page-title">Device/Controller.js</h1>
+    <h1 class="page-title">GardenEvent</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const EventEmitter = require('events');
-var Device = require('./Device');
-//const cron = require('node-cron');
-
-/**
- *
- * @module Device
- * @class Controller
- * @extends {Device}
- */
-class Controller extends Device {
-    constructor(config){
-        super(config);
-        //this.action = config.action; 
-        //this.type = config.action.constructor.name;
-        this.actions = [];
-        this.loaded = false; 
-    }
-
-    /**
-     * @param {String} event
-     * @param {Function} action
-     * @memberof Controller
-     */
-    registerActionEvent(event, action){
-        let data = {
-            eventId: this.id + '.' + event,
-            action: action
-        };
-        return this.actions.push(data);
-    }
-
-
-    /** Gets the Status of this Controller.
-     * @method
-     * @returns {SensorStatus} 
-     */
-    getStatus(){
-        return {
-            name: this.name,
-            enabled: this.enabled,
-            type: this.constructor.name
-        };
-    }
-
-    async _checkAction(){
+        <h2>
+            <span class="ancestors"><a href="Grow-Controller_Garden.html">Grow-Controller/Garden</a>.</span>
         
-    }
+        GardenEvent
+        </h2>
+        
+    
+</header>
 
-    enable(){
-        if(!this.loaded){
-            this.init();
-        }
-        this.enabled = true;
-    }
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
 
+    
 
-    init(){
-        this._validate();
+    <h4 class="name" id="GardenEvent"><span class="type-signature"></span>new GardenEvent<span class="signature">()</span><span class="type-signature"></span></h4>
 
-        this.actions.forEach(event => {
-            this.gardenEmitter.addListener(event.eventId, event.action);
-        });
-
-       /* Old Action Code:
-       if(this.action instanceof ControllerTimer){
-            try {
-                let action = this.action;
-                let cronexp = action.cronexp;
-                let actionObj = cron.schedule(cronexp, action.actionFunc);
-                action.cron = actionObj; 
-                console.log('Cron Schedular Started: ', action.cron);
-            } catch(err) {
-                throw new Error(err);
-            }  
-        } */
-
-        this.loaded = true;
-    }
-
-    _validate(){
-
-    }
-}
+    
 
 
-class ControllerAction {
-    constructor(config){
-        this.name = config.name;
-    }
-}
-/*
-class ControllerTimer extends ControllerAction{
-    constructor(config) {
-        super(config);
-        if(!cron.validate(config.cronexp)) throw new Error('Invalid Cron Expression in Controller Definition');
-        this.cronexp = config.cronexp;
-        this.actionFunc = config.actionFunc;
-    }
 
-    get cron(){
-        if(typeof cron !== 'undefined'){
-            return this.cronObj;
-        } else {
-            throw new Error('You Cannot Get A cron Object before it is defined');
-        }
-    }
 
-    set cron(cron){
-        this.cronObj = cron;
-    }
 
-    getStatus(){
-        return this.cronObj;
-    }
-} */
 
-module.exports = { Controller};
-//module.exports.ControllerTimer = ControllerTimer;
-</code></pre>
-        </article>
-    </section>
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="GardenEvent.js.html">GardenEvent.js</a>, <a href="GardenEvent.js.html#line2">line 2</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>EventEmitter</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
