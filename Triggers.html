@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>utils/Logger.js - Documentation</title>
+    <title>Triggers - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,145 +29,189 @@
 
 <div id="main">
     
-    <h1 class="page-title">utils/Logger.js</h1>
+    <h1 class="page-title">Triggers</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const util = require('util');
-const fs = require('fs');
-const path = require('path');
+        <h2>
+        Triggers
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Trigger_Condition.js.html">Trigger/Condition.js</a>, <a href="Trigger_Condition.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
-if(!String.prototype.findWithWildcards){
-// eslint-disable-next-line no-extend-native
-    String.prototype.findWithWildcards = function(needle){
-        var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-        return new RegExp("^" + needle.split("*").map(escapeRegex).join(".*") + "$").test(this);
-    }
-}
-/** 
- * 
- * Env Params Accepted: GARDEN_ROOT_DIR = Project Path | DEBUG_SCOPES * is wildcard | DEBUG
- * @namespace Utils
- * @name Logger
- * @constructor
- * @param {Object} [options] - The options object
- * @param {Object} [options.levels = {error: 0, warn: 1, info: 2, debug: 3}] - The Different Levels eg. error, warn, info, debug
- * @param {Object} [options.files = { all: null, error: '/logs/error.log', warn: '/logs/warn.log', info: '/logs/info.log', debug: '/logs/debug.log' }] - The Debugging Files, options are based on levels with the added all null can be defined to disable a specific log file
- * @param {Object} [options.stoutOpts = { noDebug: ['error', 'warn'] }] - Options for the stdout control.
- * 
- * 
- *
- * 
-*/
-module.exports = function Logger({
-    levels = {
-        error: 0,
-        warn: 1,
-        info: 2,
-        debug: 3
-    },
-    files = {
-        all: null,
-        error: '/logs/error.log',
-        warn: '/logs/warn.log',
-        info: '/logs/info.log',
-        debug: '/logs/debug.log'
-    },
-    stoutOpts = {
-        noDebug: ['error', 'warn']
-    }
-} = {}) {
-    this.levels = levels
-    this.files = {};
-    this.stoutOpts = stoutOpts;
-    this.stdout = process.stdout;
-    this.stderr = process.stderr;
 
 
-    var ENV = process.env;
-    var targetLevels, scopes;
-    if (ENV.hasOwnProperty('DEBUG') &amp;&amp; ENV.DEBUG) {
-        targetLevels = stoutOpts.hasOwnProperty('debug') ? this.stoutOpts.debug.map(e => [e, true]) : [
-            ['all', true]
-        ];
-        if (ENV.hasOwnProperty('DEBUG_SCOPES')) {
-            scopes = ENV.DEBUG_SCOPES.toUpperCase();
-            this.scopes = scopes.split(',');
-            console.log(this.scopes);
-        } else {
-            this.scopes = ['*'];
-        }
-    } else {
-        targetLevels = this.stoutOpts.noDebug.map(e => [e, true]);
-    }
 
-    this.stouts = Object.fromEntries(targetLevels);
 
-    try {
-        for (let file in files) {
-            if (typeof files[file] === 'string') {
-                let filepath = path.join(__gardendir, files[file]);
-                console.log(filepath);
-                try {
-                    this.files[file] = fs.createWriteStream(filepath, {
-                        flags: "a"
-                    });
-                } catch (err) {
-                    console.error("Error Creating Log Files Streams:\n", err);
-                }
-            }
-        }
-    } catch (err) {
-        console.error("Error Creating Log Files Streams:\n", err);
-    }
-    for (let level in levels) {
-        this[level] = function (message, ...rest) {
-            let formatScope = (scope) => {
-                if (scope == '*') {
-                    return "[All]";
-                } else {
-                    return `[${scope.toUpperCase()}]`;
-                }
-            }
-            var log = (scope = '*', inspectOpts = {
-                colors: true
-            }) => {
-                rest.unshift(message);
-                rest.unshift(inspectOpts);
-                let inspects = util.formatWithOptions.apply(null, rest);
-                let out = `${formatScope(scope)}: ${inspects}`;
-                if (this.files.hasOwnProperty('all')) this.files.all.write(out + "\n");
-                if (this.files.hasOwnProperty(level)) this.files[level].write(out + "\n");
+<section>
 
-                if(scope !== '*'){
-                    if(this.scopes.findIndex(e => scope.toUpperCase().findWithWildcards(e)) === -1){
-                        return;
-                    }
-                }
-                if (this.stouts.hasOwnProperty('all')) {
-                    if (level === 'error') this.stderr.write(out + "\n");
-                    else this.stdout.write(out + "\n");
-                }
-                if (this.stouts.hasOwnProperty(level)) {
-                    if (level === 'error') this.stderr.write(out + "\n");
-                    else this.stdout.write(out + "\n");
-                }
-            }
-            return (scope = '*') => log(scope);
-        }
-    };
-}
-</code></pre>
-        </article>
-    </section>
+<header>
+    
+        <h2>
+        Triggers
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Trigger_Condition.js.html">Trigger/Condition.js</a>, <a href="Trigger_Condition.js.html#line8">line 8</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
@@ -177,7 +221,7 @@ module.exports = function Logger({
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Mon Nov 04 2019 17:32:56 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Mon Nov 04 2019 17:32:57 GMT+0000 (Coordinated Universal Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
