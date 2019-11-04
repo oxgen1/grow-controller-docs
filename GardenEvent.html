@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Logger - Documentation</title>
+    <title>GardenEvent - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Logger</h1>
+    <h1 class="page-title">GardenEvent</h1>
     
 
     
@@ -42,7 +42,7 @@
 <header>
     
         <h2>
-        Logger
+        GardenEvent
         </h2>
         
     
@@ -56,15 +56,11 @@
 
     
 
-    <h4 class="name" id="Logger"><span class="type-signature"></span>new Logger<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="GardenEvent"><span class="type-signature"></span>new GardenEvent<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
 
-
-<div class="description">
-    Env Params Accepted: GARDEN_ROOT_DIR = Project Path | DEBUG_SCOPES * is wildcard | DEBUG
-</div>
 
 
 
@@ -99,7 +95,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_Logger.js.html">utils/Logger.js</a>, <a href="utils_Logger.js.html#line14">line 14</a>
+        <a href="GardenEvent.js.html">GardenEvent.js</a>, <a href="GardenEvent.js.html#line2">line 2</a>
     </li></ul></dd>
     
 
@@ -116,225 +112,6 @@
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                The options object
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>levels</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    {error: 0, warn: 1, info: 2, debug: 3}
-                
-                </td>
-            
-
-            <td class="description last">
-                The Different Levels eg. error, warn, info, debug
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>files</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    { all: null, error: '/logs/error.log', warn: '/logs/warn.log', info: '/logs/info.log', debug: '/logs/debug.log' }
-                
-                </td>
-            
-
-            <td class="description last">
-                The Debugging Files, options are based on levels with the added all null can be defined to disable a specific log file
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>stoutOpts</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    { noDebug: ['error', 'warn'] }
-                
-                </td>
-            
-
-            <td class="description last">
-                Options for the stdout control.
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -354,6 +131,17 @@
 </div>
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>EventEmitter</li>
+    </ul>
+
 
     
 
