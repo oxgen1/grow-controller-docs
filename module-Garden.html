@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Trigger/Condition.js - Documentation</title>
+    <title>Garden - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,197 +29,135 @@
 
 <div id="main">
     
-    <h1 class="page-title">Trigger/Condition.js</h1>
+    <h1 class="page-title">Garden</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const Sensor = require('../Device/Sensor');
+        
+            
+        
+    
+</header>
 
-/**
- * @namespace Conditions
- * @abstract
- */
-class Condition {
-    constructor() {
-        this._isEvaluable = false;
-        this._isTriggerAble = true;
-        this._lockOut = false;
-        this._event;
-    }
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Provides Garden Object</div>
+        
 
-    get id(){
-        let boolToChar = (bool) => bool ? 't' : 'f';
-        return `${this.getType()}-${this._event}-[${boolToChar(this._isEvaluable)}${boolToChar(this._isTriggerAble)}${boolToChar(this._lockOut)}]`
+        
+            
+<div class="section-method">
 
-    }
-    get isEvaluable() {
-        return this._isEvaluable;
-    }
 
-    set isEvaluable(boolean) {
-        this._isEvaluable = boolean;
-    }
 
-    get isTriggerAble() {
-        return this._isTriggerAble;
-    }
 
-    set isTriggerAble(boolean) {
-        this._isTriggerAble = boolean;
-    }
 
-    get lockOut() {
-        return this._lockOut;
-    }
-    set lockOut(boolean) {
-        this._lockOut = boolean;
-    }
 
-    get event() {
-        return this._event;
-    }
-    set event(string) {
-        this._event = string;
-    }
 
-    get lastTriggered() {
-        return this._lastTriggered;
-    }
+<dl class="details">
 
-    set lastTriggered(timestamp) {
-        this._lastTriggered = timestamp;
-    }
+    
 
-    getType() {
-        return this.constructor.name;
-    }
-}
-/**
- *
- * @class
- * @extends {Condition}
- */
-class ThresholdCondition extends Condition{
-    humanReadable(){
-        return `X ${this.operator} ${this.threshold}`;
-    }
-}
-/**
- * @class
- * @extends {Condition}
- */
-class IntervalCondition extends Condition{
-    constructor() {
-        super();
-        this._interval = 0;
-    }
-    get interval(){
-        return this._interval;
-    }
-    set interval(seconds){
-        this._interval = (seconds * 1000);
-    }
+    
 
-    humanReadable(){
-        return `Every ${(this.interval/1000)} Seconds`;
-    }
-}
+    
 
-/**
- *
- * @constructs IntervalCondition
- * @param {*} interval
- * @param {boolean} [lockOut=false]
- * @memberof Condition
- */
-const createInterval = function (interval, lockOut = false) {
-    var condition = new IntervalCondition();
-    condition.isEvaluable = false;
-    condition.interval = interval;
-    condition.ref = 'interval';
-    condition.lockOut = lockOut
-    return condition;
-}
+    
 
-/**
- *
- * Will Create a function that evalutes as follows {value} {operator} {threshold} (Ex: 10 > 11)
- * @constructs ThresholdCondition
- * @param {Int} threshold - The Threshold to check against 
- * @param {String} operator - Any Conditional Operator Except &amp;&amp; or ||
- * @param {boolean} [lockOut=false] {@default false}
- * @memberof Condition
- */
-const createCondition = function (threshold, operator, value, field = '', lockOut = false) {
-    var condition = new ThresholdCondition();
-    condition.isEvaluable = true;
-    if (value instanceof Sensor) {
-        condition.ref = 'sensor';
-        condition.sensor = value;
-        condition.dataField = field;
-        //condition.hasRef = true;
-    } else {
-        condition.ref = 'fixed';
-        condition.value = value;
-    }
-    condition.threshold = threshold;
-    condition.operator = operator;
-    condition.lockOut = lockOut
-    condition.function = (value) => {
-        return compare(value, operator, threshold);
-    };
-    return condition;
-}
+    
 
-module.exports = {
-    createCondition,
-    createInterval
-};
+    
 
-function compare(post, operator, value) {
-    switch (operator) {
-        case '>':
-            return post > value;
-        case '&lt;':
-            return post &lt; value;
-        case '>=':
-            return post >= value;
-        case '&lt;=':
-            return post &lt;= value;
-        case '==':
-            return post == value;
-        case '!=':
-            return post != value;
-        case '===':
-            return post === value;
-        case '!==':
-            return post !== value;
-    }
-}
+    
 
-function chain(first, second, operator) {
-    switch (operator) {
-        case 'and':
-            return first &amp;&amp; second;
-        case 'or':
-            return first || second;
-        case '&amp;&amp;':
-            return first &amp;&amp; second;
-        case '||':
-            return first || second;
-    }
+    
 
-}
-//let condition = createConditional('sensor', {sensor: 'test', datafield: 'Temperature', threshold: 10, operator: '>'});
-//let condition1 = createConditional('sensor', {sensor: 'test', datafield: 'Temperature', threshold: 10, operator: '&lt;'});</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="module-Garden-Garden.html">Garden</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
