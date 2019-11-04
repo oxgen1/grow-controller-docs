@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Trigger/Condition.js - Documentation</title>
+    <title>Controller - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,207 +29,398 @@
 
 <div id="main">
     
-    <h1 class="page-title">Trigger/Condition.js</h1>
+    <h1 class="page-title">Controller</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @file
- * @namespace Conditions
- * @memberof Triggers
- */
+        <h2>
+            <span class="ancestors"><a href="Devices.html">Devices</a>.</span>
+        
+        Controller
+        </h2>
+        
+    
+</header>
 
-const Sensor = require('../Device/Sensor');
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
 
-/**
- * @memberof Conditions
- * @abstract
- */
-class Condition {
-    constructor() {
-        this._isEvaluable = false;
-        this._isTriggerAble = true;
-        this._lockOut = false;
-        this._event;
-    }
+    
 
-    get id(){
-        let boolToChar = (bool) => bool ? 't' : 'f';
-        return `${this.getType()}-${this._event}-[${boolToChar(this._isEvaluable)}${boolToChar(this._isTriggerAble)}${boolToChar(this._lockOut)}]`
+    <h4 class="name" id="Controller"><span class="type-signature"></span>new Controller<span class="signature">()</span><span class="type-signature"></span></h4>
 
-    }
-    get isEvaluable() {
-        return this._isEvaluable;
-    }
+    
 
-    set isEvaluable(boolean) {
-        this._isEvaluable = boolean;
-    }
 
-    get isTriggerAble() {
-        return this._isTriggerAble;
-    }
 
-    set isTriggerAble(boolean) {
-        this._isTriggerAble = boolean;
-    }
 
-    get lockOut() {
-        return this._lockOut;
-    }
-    set lockOut(boolean) {
-        this._lockOut = boolean;
-    }
 
-    get event() {
-        return this._event;
-    }
-    set event(string) {
-        this._event = string;
-    }
 
-    get lastTriggered() {
-        return this._lastTriggered;
-    }
 
-    set lastTriggered(timestamp) {
-        this._lastTriggered = timestamp;
-    }
+<dl class="details">
 
-    getType() {
-        return this.constructor.name;
-    }
-}
-/**
- *
- * @class
- * @extends {Condition}
- * @memberof Conditions
- * @abstract
- */
-class ThresholdCondition extends Condition{
-    humanReadable(){
-        return `X ${this.operator} ${this.threshold}`;
-    }
-}
-/**
- * @class
- * @extends {Condition}
- * @memberof Conditions
- * @abstract
- */
-class IntervalCondition extends Condition{
-    constructor() {
-        super();
-        this._interval = 0;
-    }
-    get interval(){
-        return this._interval;
-    }
-    set interval(seconds){
-        this._interval = (seconds * 1000);
-    }
+    
 
-    humanReadable(){
-        return `Every ${(this.interval/1000)} Seconds`;
-    }
-}
+    
 
-/**
- * @memberof Triggers
- * @constructs IntervalCondition
- * @param {*} interval
- * @param {boolean} [lockOut=false]
- * @memberof Conditions
- */
-const createInterval = function (interval, lockOut = false) {
-    var condition = new IntervalCondition();
-    condition.isEvaluable = false;
-    condition.interval = interval;
-    condition.ref = 'interval';
-    condition.lockOut = lockOut
-    return condition;
-}
+    
 
-/**
- *
- * Will Create a function that evalutes as follows {value} {operator} {threshold} (Ex: 10 > 11)
- * @constructs ThresholdCondition
- * @param {Int} threshold - The Threshold to check against 
- * @param {String} operator - Any Conditional Operator Except &amp;&amp; or ||
- * @param {boolean} [lockOut=false] {@default false}
- * @memberof Conditions
- */
-const createCondition = function (threshold, operator, value, field = '', lockOut = false) {
-    var condition = new ThresholdCondition();
-    condition.isEvaluable = true;
-    if (value instanceof Sensor) {
-        condition.ref = 'sensor';
-        condition.sensor = value;
-        condition.dataField = field;
-        //condition.hasRef = true;
-    } else {
-        condition.ref = 'fixed';
-        condition.value = value;
-    }
-    condition.threshold = threshold;
-    condition.operator = operator;
-    condition.lockOut = lockOut
-    condition.function = (value) => {
-        return compare(value, operator, threshold);
-    };
-    return condition;
-}
+    
 
-module.exports = {
-    createCondition,
-    createInterval
-};
+    
 
-function compare(post, operator, value) {
-    switch (operator) {
-        case '>':
-            return post > value;
-        case '&lt;':
-            return post &lt; value;
-        case '>=':
-            return post >= value;
-        case '&lt;=':
-            return post &lt;= value;
-        case '==':
-            return post == value;
-        case '!=':
-            return post != value;
-        case '===':
-            return post === value;
-        case '!==':
-            return post !== value;
-    }
-}
+    
 
-function chain(first, second, operator) {
-    switch (operator) {
-        case 'and':
-            return first &amp;&amp; second;
-        case 'or':
-            return first || second;
-        case '&amp;&amp;':
-            return first &amp;&amp; second;
-        case '||':
-            return first || second;
-    }
+    
 
-}
-//let condition = createConditional('sensor', {sensor: 'test', datafield: 'Temperature', threshold: 10, operator: '>'});
-//let condition1 = createConditional('sensor', {sensor: 'test', datafield: 'Temperature', threshold: 10, operator: '&lt;'});</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Device_Controller.js.html">Device/Controller.js</a>, <a href="Device_Controller.js.html#line5">line 5</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Device.html">Device</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="enabled"><span class="type-signature"></span>enabled<span class="type-signature"> :boolean</span></h4>
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Device.html#enabled">Device#enabled</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>false</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Device_Device.js.html">Device/Device.js</a>, <a href="Device_Device.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><code>boolean</code></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="verbose"><span class="type-signature"></span>verbose<span class="type-signature"> :boolean</span></h4>
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Device.html#verbose">Device#verbose</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>false</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Device_Device.js.html">Device/Device.js</a>, <a href="Device_Device.js.html#line32">line 32</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><code>boolean</code></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="disable"><span class="type-signature">(abstract) </span>disable<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Disable Device
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Device.html#disable">Device#disable</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Device_Device.js.html">Device/Device.js</a>, <a href="Device_Device.js.html#line68">line 68</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
