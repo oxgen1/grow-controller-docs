@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>View - Documentation</title>
+    <title>Grow-Controller/Garden - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">View</h1>
+    <h1 class="page-title">Grow-Controller/Garden</h1>
     
 
     
@@ -42,17 +42,10 @@
 <header>
     
         <h2>
-        View
+        Grow-Controller/Garden
         </h2>
         
-            <div class="class-description">Spec Notes: 
-This should Handle Getting Data and Status from Devices and Keeping that data current
-Data Will probably in a very raw format but possibly a view could have some formatting spec
-Need to Handle Sensor and Controller Devices 
-Need a way to know what types data to expect & how they are being served here.
-For Controller we will want scheudled and triggered event data
-Maybe we should call it sometother then view maybe Fetcher or something.
-We should work to support more even driven data aqusitoin (Sensorssss)</div>
+            <div class="class-description">Garden</div>
         
     
 </header>
@@ -67,11 +60,15 @@ We should work to support more even driven data aqusitoin (Sensorssss)</div>
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="View"><span class="type-signature"></span>new View<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Grow-Controller/Garden"><span class="type-signature"></span>new Grow-Controller/Garden<span class="signature">(name, desc, emitter)</span><span class="type-signature"></span></h4>
 
     
 
 
+
+<div class="description">
+    Garden Object Manages Devices.
+</div>
 
 
 
@@ -106,7 +103,7 @@ We should work to support more even driven data aqusitoin (Sensorssss)</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Views_View.js.html">Views/View.js</a>, <a href="Views_View.js.html#line13">line 13</a>
+        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -123,6 +120,110 @@ We should work to support more even driven data aqusitoin (Sensorssss)</div>
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                The Name of the Garden
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>desc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (Optional) A Description for the Garden
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>emitter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="GardenEvent.html">GardenEvent</a></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Event Emitter
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
