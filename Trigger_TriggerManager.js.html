@@ -78,6 +78,30 @@ class TriggerManager {
    * @memberof Triggers
    */
   createTrigger(condition, actionEvent) {
+
+
+    var registerListener = (trigger) => {
+      //TODO Make Unique
+      let internalEvent = trigger.internalEvent;
+      let actionEvent = trigger.actionEvent;
+
+      /**
+       * This Defines Our Trigger Level Listener and will have all the logic to decide if we send the Garden Level Event or not
+       * @listens Triggers#ConditionInternal
+       */
+      trigger.emitter.on(internalEvent, (condition) => {
+        log.debug(`[${condition.getType()}] Condition Triggered Internal Event Emitteted`)('condition');
+        if (typeof trigger.triggerLimiter !== "undefined") {
+          if (trigger.triggerLimiter.id !== condition.id) return;
+        }
+        var result = trigger.evaluateOtherConditions(condition);
+        log.debug('Internal Condition Event Fired Result: %s', result)('trigger');
+        if (result) {
+          this.gardenEmitter.emit(trigger.actionEvent);
+          log.info("Firing Action Event %s", actionEvent)('Trigger');
+        }
+      });
+    }
     /**
      * Loads the Condition Setting specific Properties Defined in the Trigger Object
      * @function
@@ -89,58 +113,58 @@ class TriggerManager {
       //Define Triggers Internal Event at the Condition Level
       condition.event = trigger.internalEvent;
 
-        //If this is a ThresholdCondition
-        if (condition.getType() === 'ThresholdCondition') {
-          var _condition = {};
-          _condition = Object.assign(_condition, condition);
+      //If this is a ThresholdCondition
+      if (condition.getType() === 'ThresholdCondition') {
+        var _condition = {};
+        _condition = Object.assign(_condition, condition);
 
-          //If its a sensor Linked Conditional Trigger Condition
-          if (condition.hasOwnProperty('sensor')) {
-            condition.read = () => {
-              let data = condition.lastData;
-              return data[condition.dataField];
-            }
-            condition.evaluateState = _condition.function;
-            condition.function = (value) => {
-              log.debug('Condition Expression: ' + value + ' ' + condition.operator + ' ' + condition.threshold)('condition');
-              log.debug('Condition Value: ', value)('condition');
-              let state = _condition.function(value);
-              log.debug('Condition State: ', state)('condition');
-              condition.lastTriggered = Date.now();
-              condition.lastState = state;
-              if (state) {
-                try {
-                  log.debug('Value Truethy: ', state)('condition');
-                  condition.lastEmitted = Date.now();
-                  /**
-                   * @fires Triggers#ConditionInternal
-                   */
-                  this.emitter.emit(condition.event, condition, trigger);
-                } catch (err) {
-                  console.error('Error While Trying to Emit Internal Condition Event: ', err);
-                }
-              }
-              return state;
-            }
+        //If its a sensor Linked Conditional Trigger Condition
+        if (condition.hasOwnProperty('sensor')) {
+          condition.read = () => {
+            let data = condition.lastData;
+            return data[condition.dataField];
           }
-          //If this condition is Interval Type
-        } else if (condition.getType() === 'IntervalCondition') {
-          /**
-           * @fires Triggers#ConditionInternal
-           */
-          condition.function = () => {
-            condition.intervalObj = setInterval(() => {
-              /** Internal Condition Event Emitter
-               * @event Triggers#ConditionInternal 
-               * @type {Conditions.Condition}
-               * @type {Trigger}
-               * 
-              */
-              this.emitter.emit(condition.event, condition, trigger);
-            }, condition.interval);
+          condition.evaluateState = _condition.function;
+          condition.function = (value) => {
+            log.debug('Condition Expression: ' + value + ' ' + condition.operator + ' ' + condition.threshold)('condition');
+            log.debug('Condition Value: ', value)('condition');
+            let state = _condition.function(value);
+            log.debug('Condition State: ', state)('condition');
+            condition.lastTriggered = Date.now();
+            condition.lastState = state;
+            if (state) {
+              try {
+                log.debug('Value Truethy: ', state)('condition');
+                condition.lastEmitted = Date.now();
+                /**
+                 * @fires Triggers#ConditionInternal
+                 */
+                this.emitter.emit(condition.event, condition, trigger);
+              } catch (err) {
+                console.error('Error While Trying to Emit Internal Condition Event: ', err);
+              }
+            }
+            return state;
           }
         }
+        //If this condition is Interval Type
+      } else if (condition.getType() === 'IntervalCondition') {
+        /**
+         * @fires Triggers#ConditionInternal
+         */
+        condition.function = () => {
+          condition.intervalObj = setInterval(() => {
+            /** Internal Condition Event Emitter
+             * @event Triggers#ConditionInternal 
+             * @type {Conditions.Condition}
+             * @type {Trigger}
+             * 
+             */
+            this.emitter.emit(condition.event, condition, trigger);
+          }, condition.interval);
+        }
       }
+    }
 
     /**
      * @name Triggers#Trigger
@@ -149,6 +173,7 @@ class TriggerManager {
      * @property {String} actionEvent - The event that this Trigger will trigger when it meets the conditions set
      * @property {String} internalEvent - An Internal Event that triggers before the actionEvent when one of the conditions are met
      * @property {Array.&lt;Condition>|Array.linkingObjects} logic - An Array of Conditions and Linking Objects 
+     * @property {Condition} triggerLimiter @default undefined - If set the we will only Trigger off of this one Condition, but check the other exsiting conditions before executing the action.
      */
     let trigger = {
       id: this.triggers.length,
@@ -181,69 +206,51 @@ class TriggerManager {
       },
       checkOtherConditions(condition) {
         let lastTriggered = condition.lastTriggered;
-        //TODO Remove it's redudent (This can be done on the Reduce function)
-        let evaluatedArry = this.logic.map((value, index) => {
-          //For now we are gonna decide if its the same condition by looking at the lastTriggered field, this may have unintended implications but we if see lastTriggered is not the same we want to reevaluate that conditional anyway
+        let evaluatedArry = this.logic.reduce((acc, value, i, arr) => {
           if (value.hasOwnProperty("type")) { // These will be our linking Objects
+            if (!arr[i + 1].hasOwnProperty("type") &amp;&amp; !arr[i + 1].isEvaluable) return acc;
             if (value.type == 'init') {
-              return 'init';
+              acc.push('init');
             } else if (value.type == 'and') {
-              return '&amp;&amp;';
+              acc.push('&amp;&amp;');
             } else if (value.type == 'or') {
-              return '||';
+              acc.push('||');
             }
           } else if (value.isEvaluable) {
-            if (value.lastTriggered > lastTriggered - 5000 &amp;&amp; value.lastTriggered &lt; +5000) {
-              return value.lastState;
+            if (value.lastTriggered > lastTriggered - 2000 &amp;&amp; value.lastTriggered &lt; +2000) {
+              acc.push(value.lastState);
             } else {
               let v = value.read();
-              return value.evaluateState(v);
+              acc.push(value.evaluateState(v));
             }
+          } else {
+
           }
-        });
+          return acc;
+        }, []);
         return evaluatedArry;
       },
-      init: function () {
-        let registerListener = () => {
-
-          let evaluateOtherConditions = (condition) => {
-            if (condition.isEvaluable) {
-              let evaluatedArr = this.checkOtherConditions(condition);
-              let result = evaluatedArr.reduce((acc, curr, i, arr) => {
-                //console.log("accumulator: ", acc);
-                //console.log("current value: ", curr);
-                if (i == 1) {
-                  acc = curr;
-                }
-                if (curr == '&amp;&amp;') {
-                  acc = acc &amp;&amp; arr[i + 1];
-                } else if (curr == '||') {
-                  acc = acc || arr[i + 1];
-                }
-                return acc;
-              });
-              log.info('Trigger Emitter Result: ', result, condition)('trigger');
-              log.debug('Trigger Emitter evaluated Array: ', evaluatedArr, trigger)('trigger');
+      evaluateOtherConditions: function (condition) {
+        let evaluatedArr = this.checkOtherConditions(condition);
+        if (evaluatedArr.length > 0) { // if we have no evaluteable conditions we should not evaluate
+          var result = evaluatedArr.reduce((acc, curr, i, arr) => {
+            if (i == 1) {
+              acc = curr;
             }
-          }
-          //TODO Make Unique
-          let internalEvent = this.internalEvent;
-          let actionEvent = this.actionEvent;
-
-          /**
-           * This Defines Our Trigger Level Listener and will have all the logic to decide if we send the Garden Level Event or not
-           * @listens Triggers#ConditionInternal
-           */
-          this.emitter.on(internalEvent, (condition, trigger) => {
-            log.debug(`[${condition.getType()}] Condition Triggered Internal Event Emitted On: `, condition)('trigger');
-            if(typeof this.triggerLimiter !== "undefined"){
-              if(this.triggerLimiter.id !== condition.id) return;
+            if (curr == '&amp;&amp;') {
+              acc = acc &amp;&amp; arr[i + 1];
+            } else if (curr == '||') {
+              acc = acc || arr[i + 1];
             }
-            evaluateOtherConditions(condition);
+            return acc;
           });
+          log.debug('Trigger Emitter evaluated: %s Array: ', evaluatedArr, result)('trigger-eval');
+          return result;
+        } else {
+          return true;
         }
-
-
+      },
+      init: function () {
         let logic = this.getLogic();
         let type;
         logic.forEach((logicE, i) => {
@@ -264,13 +271,11 @@ class TriggerManager {
             }
           }
         });
-        registerListener();
+        registerListener(this);
 
         return this;
       }
     }
-    //TODO Handle Timebased cases, You will need to create a read function and a function that tests the case
-
     load(condition);
     if (condition.getType() === "IntervalCondition" &amp;&amp; condition.isTriggerAble) {
       trigger.triggerLimiter = condition;
@@ -283,8 +288,7 @@ class TriggerManager {
   }
 }
 
-module.exports = TriggerManager;
-</code></pre>
+module.exports = TriggerManager;</code></pre>
         </article>
     </section>
 
@@ -296,7 +300,7 @@ module.exports = TriggerManager;
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Nov 05 2019 15:48:38 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Sat Nov 09 2019 20:18:28 GMT+0000 (Coordinated Universal Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
