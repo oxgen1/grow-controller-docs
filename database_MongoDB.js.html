@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Garden - Documentation</title>
+    <title>database/MongoDB.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,408 +29,43 @@
 
 <div id="main">
     
-    <h1 class="page-title">Garden</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-        Garden
-        </h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Provides Garden Object</div>
-        
-
-        
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-            <h3>Example</h3>
-            
-    <pre class="prettyprint"><code>var gardenEvent = new GardenEvent(); // Defind Garden Event Emitter
-var testGarden = new Garden('testGarden', 'Test Desc', gardenEvent); //Create Garden
-var sensor1 = testGarden.loadSensor('SensorTest'); // Load A Sensor (FilePath Relitive to __gardendir/Sensors)
-testGarden.loadSensor('TestSensor1');
-testGarden.loadController('ControllerTest'); //Load A Contrller (FilePath Relitive to __gardendir/Controllers)</code></pre>
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Garden.Garden.html">Garden</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Garden.GardenEvent.html">GardenEvent</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="controllers"><span class="type-signature"></span>controllers<span class="type-signature"> :Array.&lt;<a href="Controller.html">Controller</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line37">line 37</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Controller.html">Controller</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="emitter"><span class="type-signature"></span>emitter<span class="type-signature"> :<a href="Garden.GardenEvent.html">Garden.GardenEvent</a></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line44">line 44</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Garden.GardenEvent.html">Garden.GardenEvent</a></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="enabled"><span class="type-signature"></span>enabled<span class="type-signature"> :Boolean</span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-default">Default Value:</dt>
-    <dd class="tag-default"><ul class="dummy">
-            <li>false</li>
-        </ul></dd>
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line49">line 49</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Boolean</code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="sensors"><span class="type-signature"></span>sensors<span class="type-signature"> :Array.&lt;<a href="Sensor.html">Sensor</a>></span></h4>
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Garden.js.html">Garden.js</a>, <a href="Garden.js.html#line32">line 32</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code>Array.&lt;<a href="Sensor.html">Sensor</a>></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">database/MongoDB.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const MongoClient = require('mongodb').MongoClient;
+const url = 'mongodb://localhost:27017/Garden';
+const dbName = 'Gardens';
+/**
+ * DB Connection
+ * @type {MongoClient.db} 
+ * */
+let _db;
+
+
+module.exports = {
+    connectToDB: function (callback){
+        MongoClient.connect(url, {}, function (err, client){
+            _db = client.db(dbName);
+            return callback(err);
+        })
+    },
+    /**
+     * Get Mongo DB Gardens DB Connection
+     * @returns {MongoClient.db} db
+     */
+    getDB: function(){
+        return _db;
+    }
+}</code></pre>
+        </article>
+    </section>
 
 
 
